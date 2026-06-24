@@ -1,0 +1,83 @@
+# =======================================================================
+# TO-LATEX: CONFIGURACIÓN OFICIAL DE .GITIGNORE (PYTHON + SWIFT)
+# =======================================================================
+
+# --- Archivos del Sistema Operativo ---
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+*.swp
+
+# --- Configuración de IDEs y Editores ---
+.vscode/
+.idea/
+*.suo
+*.sln
+
+# --- PYTHON: Entornos Virtuales y Caché ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+.pytest_cache/
+
+# --- SWIFT / XCODE (CRÍTICO PARA ENTORNO APPLE) ---
+## Construcción y archivos temporales de Xcode
+build/
+DerivedData/
+*.亮
+*.moved-aside
+*.app
+*.xcent
+*.framework
+*.dSYM
+
+## Configuraciones de Usuario (¡NUNCA SUBIR ESTO!)
+## Guardan la posición de tus pestañas, qué archivos abriste, etc.
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcscheme
+*.xcbkptlist
+*.xcuserstate
+
+## Swift Package Manager (SPM)
+.swiftpm/
+.build/
+
+## Gestores de Dependencias de Terceros (CocoaPods y Carthage)
+Pods/
+Carthage/Build/
+
+## Herramientas de Automatización (Fastlane - Muy usado en iOS)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# --- Datasets y Modelos IA (Python Side) ---
+*.csv
+*.tsv
+*.json
+*.xlsx
+*.pkl
+*.pickle
+*.h5
+*.pt
+*.onnx
+*.weights
+data/
+datasets/
+models/
+
+# --- Seguridad: Variables de Entorno y Llaves Secretas ---
+.env
+.env.local
+.env.development
+.env.production
+*.pem
+*.key
