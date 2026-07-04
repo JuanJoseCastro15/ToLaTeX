@@ -1,83 +1,97 @@
-# =======================================================================
-# TO-LATEX: CONFIGURACIÓN OFICIAL DE .GITIGNORE (PYTHON + SWIFT)
-# =======================================================================
+# ==========================================
+# 1. VISUAL STUDIO CODE
+# ==========================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+*.code-workspace
+.history/
 
-# --- Archivos del Sistema Operativo ---
-.DS_Store
-.DS_Store?
-._*
-Thumbs.db
-*.swp
-
-# --- Configuración de IDEs y Editores ---
-.vscode/
-.idea/
+# ==========================================
+# 2. VISUAL STUDIO (Comunidad/Enterprise)
+# ==========================================
+.vs/
 *.suo
-*.sln
+*.user
+*.userosscache
+*.sln.docstates
 
-# --- PYTHON: Entornos Virtuales y Caché ---
+# Resultados de compilación y binarios
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Caché y bases de datos locales
+*.ncb
+*.sdf
+*.opensdf
+*.sqlite
+ipch/
+
+# ==========================================
+# 3. JUPYTER NOTEBOOK & PYTHON
+# ==========================================
+# Checkpoints de Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Archivos temporales de Jupyter y guardado automático
+*.ipynb_checkpoints
+
+# Entornos virtuales y caché de Python (muy común al usar Jupyter)
 __pycache__/
 *.py[cod]
 *$py.class
-.Python
-env/
-venv/
 .venv/
-pip-log.txt
-.pytest_cache/
-
-# --- SWIFT / XCODE (CRÍTICO PARA ENTORNO APPLE) ---
-## Construcción y archivos temporales de Xcode
-build/
-DerivedData/
-*.亮
-*.moved-aside
-*.app
-*.xcent
-*.framework
-*.dSYM
-
-## Configuraciones de Usuario (¡NUNCA SUBIR ESTO!)
-## Guardan la posición de tus pestañas, qué archivos abriste, etc.
-*.xcodeproj/xcuserdata/
-*.xcworkspace/xcuserdata/
-*.xcscheme
-*.xcbkptlist
-*.xcuserstate
-
-## Swift Package Manager (SPM)
-.swiftpm/
-.build/
-
-## Gestores de Dependencias de Terceros (CocoaPods y Carthage)
-Pods/
-Carthage/Build/
-
-## Herramientas de Automatización (Fastlane - Muy usado en iOS)
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/
-fastlane/test_output/
-
-# --- Datasets y Modelos IA (Python Side) ---
-*.csv
-*.tsv
-*.json
-*.xlsx
-*.pkl
-*.pickle
-*.h5
-*.pt
-*.onnx
-*.weights
-data/
-datasets/
-models/
-
-# --- Seguridad: Variables de Entorno y Llaves Secretas ---
+venv/
+env/
 .env
-.env.local
-.env.development
-.env.production
-*.pem
-*.key
+
+# ==========================================
+# 4. SWIFT & XCODE
+# ==========================================
+# Swift Package Manager (SPM)
+.build/
+Packages/
+.swiftpm/xcode/xcuserdata/
+.swiftpm/xcode/workspace.xcworkspace/
+
+# Datos de usuario de Xcode (evita conflictos de ventanas y estados)
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Compilación y artefactos de Swift/iOS/macOS
+DerivedData/
+build/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM/
+
+# ==========================================
+# 5. SISTEMA OPERATIVO (General)
+# ==========================================
+# macOS (Crucial si trabajas con Swift)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
