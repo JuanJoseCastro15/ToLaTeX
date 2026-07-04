@@ -11,6 +11,9 @@ Thumbs.db
 
 # --- Configuración de IDEs y Editores ---
 .vscode/
+.vs/
+*.pyc
+.env
 .idea/
 *.suo
 *.sln
