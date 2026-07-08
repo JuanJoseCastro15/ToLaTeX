@@ -6,7 +6,6 @@ import os
 
 
 def cargarImagen(ruta):
-    """Carga la imagen en color y valida que exista."""
     if not os.path.exists(ruta):
         print(f"Error: La ruta '{ruta}' no existe.")
         sys.exit(1)
@@ -20,7 +19,6 @@ def cargarImagen(ruta):
 
 
 def segmentarImagen(gris):
-    """Aplica umbral básico y umbral de Otsu sobre la imagen en grises."""
     valorUmbral = 127
     _, umbralBasico = cv2.threshold(gris, valorUmbral, 255, cv2.THRESH_BINARY)
 
@@ -33,10 +31,9 @@ def segmentarImagen(gris):
 
 
 def detectarBordesYEsquinas(original, gris):
-    """Detecta bordes con Canny y esquinas con Harris, marcando las esquinas en rojo."""
     imagenMarcada = original.copy()
 
-    filtroBorde = cv2.GaussianBlur(gris, (1, 1), 0)
+    filtroBorde   = cv2.GaussianBlur(gris, (1, 1),   0)
     filtroEsquina = cv2.GaussianBlur(gris, (11, 11), 0)
 
     bordes = cv2.Canny(filtroBorde, 120, 200)
@@ -48,27 +45,37 @@ def detectarBordesYEsquinas(original, gris):
     esquina = cv2.dilate(esquina, None)
 
     umbral = 0.33 * esquina.max()
-    imagenMarcada[esquina > umbral] = [0, 0, 255]  # Rojo en formato BGR
+    imagenMarcada[esquina > umbral] = [0, 0, 255]
 
-    return bordes, imagenMarcada
+    # ── GUARDAR COORDENADAS (h, w) ───────────────────────────────────────
+    filas, columnas = np.where(esquina > umbral)
+    coordenadas = list(zip(filas.tolist(), columnas.tolist()))
+
+    with open("coordenadas_esquinas.txt", "w") as archivo:
+        archivo.write("# Coordenadas de esquinas detectadas\n")
+        archivo.write("# Formato: h (altura), w (anchura)\n")
+        archivo.write(f"# Total: {len(coordenadas)}\n")
+        for h, w in coordenadas:
+            archivo.write(f"{h},{w}\n")
+
+    print(f"Esquinas detectadas: {len(coordenadas)}")
+    print("Coordenadas guardadas en: coordenadas_esquinas.txt")
+    # ─────────────────────────────────────────────────────────────────────
+
+    return bordes, imagenMarcada, coordenadas  # 👈 Retorna las coordenadas también
 
 
 def procesarImagen(ruta):
-    """Pipeline completo: segmentación + bordes/esquinas, todo en una sola figura."""
     original = cargarImagen(ruta)
     gris = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
 
-    # --- Segmentación ---
     umbralBasico, umbralOtsu, valorUmbral, umbralCalculado = segmentarImagen(gris)
 
-    # --- Bordes y esquinas ---
-    bordes, imagenMarcada = detectarBordesYEsquinas(original, gris)
+    bordes, imagenMarcada, coordenadas = detectarBordesYEsquinas(original, gris)  # 👈
 
-    # Convertir BGR -> RGB para que matplotlib muestre los colores correctamente
-    originalRGB = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
+    originalRGB      = cv2.cvtColor(original,      cv2.COLOR_BGR2RGB)
     imagenMarcadaRGB = cv2.cvtColor(imagenMarcada, cv2.COLOR_BGR2RGB)
 
-    # --- Mostrar todo en una sola figura con 6 subplots ---
     titulos = [
         "Imagen Original",
         f"Umbral Básico (T={valorUmbral})",
@@ -77,7 +84,7 @@ def procesarImagen(ruta):
         "Detector de Bordes (Canny)",
         "Detector de Esquinas (Harris)",
     ]
-    imagenes = [originalRGB, umbralBasico, umbralOtsu, gris, bordes, imagenMarcadaRGB]
+    imagenes   = [originalRGB, umbralBasico, umbralOtsu, gris, bordes, imagenMarcadaRGB]
     mapasColor = [None, "gray", "gray", "gray", "gray", None]
 
     plt.figure(figsize=(15, 8))
@@ -90,10 +97,10 @@ def procesarImagen(ruta):
     plt.tight_layout()
     plt.show(block=True)
 
+    return coordenadas
+
 
 # --- EJECUCIÓN ---
 if __name__ == "__main__":
-    # Si se pasa la ruta como argumento por consola, se usa esa.
-    # Si no, usa '01_image.jpg' por defecto.
-    rutaImagen = sys.argv[1] if len(sys.argv) > 1 else "01_image.jpg"
+    rutaImagen = sys.argv[1] if len(sys.argv) > 1 else "IMG_20260704_150429.jpg"
     procesarImagen(rutaImagen)
