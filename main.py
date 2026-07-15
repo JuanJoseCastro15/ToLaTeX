@@ -85,6 +85,41 @@ def detectarBordes(grisFinal):
     return bordes
 
 
+def cross_product(p1: tuple, p2: tuple, p3: tuple) -> float:
+    """Producto cruz para determinar la orientación de tres puntos."""
+    return (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0])
+
+
+def compute_convex_hull(points: list) -> list:
+    """
+    Calcula el casco convexo de un conjunto de puntos (x, y) usando el
+    algoritmo Monotone Chain (Andrew's algorithm).
+
+    Se usa para 'envolver' los puntos crudos del contorno del documento
+    en un polígono limpio antes de simplificarlo con approxPolyDP. Esto
+    ayuda cuando el contorno viene fragmentado o con muescas por sombras
+    o ruido: el hull ignora las hendiduras internas y conserva solo el
+    perímetro exterior real.
+    """
+    sorted_points = sorted(list(set(points)))
+    if len(sorted_points) <= 3:
+        return sorted_points
+
+    lower = []
+    for p in sorted_points:
+        while len(lower) >= 2 and cross_product(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+
+    upper = []
+    for p in reversed(sorted_points):
+        while len(upper) >= 2 and cross_product(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+
+    return lower[:-1] + upper[:-1]
+
+
 def ordenarPuntos(puntos):
     """
     Reordena las 4 esquinas en el orden estándar:
@@ -104,12 +139,33 @@ def ordenarPuntos(puntos):
     return rectangulo.astype("int").tolist()
 
 
+def contornoAConvexHull(contorno):
+    """
+    Convierte un contorno de OpenCV (array de forma Nx1x2) a su casco
+    convexo, usando nuestra implementación propia (Monotone Chain), y
+    lo regresa en el mismo formato que espera OpenCV para poder seguir
+    usando cv2.arcLength / cv2.approxPolyDP sobre él.
+    """
+    puntosXY = [tuple(p[0]) for p in contorno]
+    hull = compute_convex_hull(puntosXY)
+
+    if len(hull) < 3:
+        # Hull degenerado (puntos colineales, etc.) — devolvemos el
+        # contorno original sin modificar para no romper el pipeline.
+        return contorno
+
+    return np.array(hull, dtype=np.int32).reshape((-1, 1, 2))
+
+
 def detectarEsquinas(original, bordes):
     """
-    Detecta las 4 esquinas del documento usando contornos + approxPolyDP,
-    en vez de cornerHarris. Es más robusto porque:
+    Detecta las 4 esquinas del documento usando contornos + convex hull
+    + approxPolyDP, en vez de cornerHarris. Es más robusto porque:
     - Solo considera el contorno de MAYOR ÁREA (asumiendo que el
       documento es el objeto más grande de la imagen).
+    - El convex hull 'envuelve' el contorno en un polígono limpio,
+      eliminando muescas y fragmentaciones causadas por sombras o ruido,
+      antes de intentar reducirlo a 4 vértices.
     - Fuerza la aproximación a exactamente 4 vértices, en vez de
       devolver decenas de puntos "esquina" sueltos.
     """
@@ -126,6 +182,9 @@ def detectarEsquinas(original, bordes):
     # Nos quedamos con los 5 contornos más grandes como candidatos.
     candidatos = sorted(contornos, key=cv2.contourArea, reverse=True)[:5]
 
+    # Convertimos cada candidato a su casco convexo antes de simplificar.
+    candidatosHull = [contornoAConvexHull(c) for c in candidatos]
+
     # Probamos varios valores de epsilon (de menos a más tolerante) para
     # cada contorno candidato, en vez de usar un único valor fijo.
     # Esto ayuda cuando las sombras o el ruido generan contornos irregulares
@@ -133,7 +192,7 @@ def detectarEsquinas(original, bordes):
     factoresEpsilon = [0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.09]
 
     esquinas = None
-    for contorno in candidatos:
+    for contorno in candidatosHull:
         perimetro = cv2.arcLength(contorno, True)
         for factor in factoresEpsilon:
             epsilon = factor * perimetro
@@ -241,5 +300,5 @@ def procesarImagen(ruta):
 
 # --- EJECUCIÓN ---
 if __name__ == "__main__":
-    rutaImagen = sys.argv[1] if len(sys.argv) > 1 else "imagen16.jpg"
+    rutaImagen = sys.argv[1] if len(sys.argv) > 1 else "imagenes/imagen16.jpg"
     procesarImagen(rutaImagen)
