@@ -1,6 +1,6 @@
 # Coordenadas de las 4 esquinas del documento
 # Formato: etiqueta, x, y
-Sup-Izq,99,495
-Sup-Der,2780,477
-Inf-Der,2034,3980
-Inf-Izq,170,3808
+Sup-Izq,110,319
+Sup-Der,2727,233
+Inf-Der,2999,3547
+Inf-Izq,161,3711

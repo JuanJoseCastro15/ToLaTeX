@@ -241,6 +241,56 @@ def detectarEsquinas(original, bordes):
     return imagenMarcada, puntos
 
 
+def encontrarDestino(esquinas):
+    """
+    Calcula las coordenadas destino (un rectángulo perfecto) a partir de
+    las 4 esquinas detectadas, para saber a qué tamaño final se debe
+    'enderezar' el documento.
+
+    Se calculan el ancho y alto máximos posibles entre las esquinas
+    (porque en la foto original el documento rara vez es un rectángulo
+    perfecto: está inclinado o en perspectiva), y se arma un rectángulo
+    de destino con esas medidas.
+    """
+    (tl, tr, br, bl) = esquinas
+
+    anchoA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    anchoB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    anchoMaximo = max(int(anchoA), int(anchoB))
+
+    altoA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    altoB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    altoMaximo = max(int(altoA), int(altoB))
+
+    coordenadasDestino = [
+        [0, 0],
+        [anchoMaximo, 0],
+        [anchoMaximo, altoMaximo],
+        [0, altoMaximo],
+    ]
+
+    return ordenarPuntos(coordenadasDestino)
+
+
+def enderezarDocumento(original, esquinas, destino):
+    """
+    Aplica la transformación de perspectiva (homografía) para 'enderezar'
+    el documento: lo alinea y lo recorta según las esquinas detectadas.
+    """
+    matrizHomografia = cv2.getPerspectiveTransform(
+        np.float32(esquinas), np.float32(destino)
+    )
+
+    documentoFinal = cv2.warpPerspective(
+        original,
+        matrizHomografia,
+        (destino[2][0], destino[2][1]),
+        flags=cv2.INTER_LINEAR,
+    )
+
+    return documentoFinal
+
+
 def procesarImagen(ruta):
     original = cargarImagen(ruta)
     gris = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
@@ -262,10 +312,24 @@ def procesarImagen(ruta):
     # Paso 5: detección de esquinas por contornos + approxPolyDP
     imagenMarcada, esquinas = detectarEsquinas(original, bordes)
 
+    # Paso 6: perspective transform para enderezar el documento
+    if len(esquinas) == 4:
+        destino = encontrarDestino(esquinas)
+        documentoFinal = enderezarDocumento(original, esquinas, destino)
+        cv2.imwrite("documento_enderezado.png", documentoFinal)
+        print("Documento enderezado guardado en: documento_enderezado.png")
+    else:
+        print(
+            "No se pudieron detectar las 4 esquinas; se omite el "
+            "enderezado del documento (paso 6)."
+        )
+        documentoFinal = original.copy()
+
     originalRGB = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
     imagenLimpiaRGB = cv2.cvtColor(imagenLimpia, cv2.COLOR_BGR2RGB)
     imagenSinFondoRGB = cv2.cvtColor(imagenSinFondo, cv2.COLOR_BGR2RGB)
     imagenMarcadaRGB = cv2.cvtColor(imagenMarcada, cv2.COLOR_BGR2RGB)
+    documentoFinalRGB = cv2.cvtColor(documentoFinal, cv2.COLOR_BGR2RGB)
 
     titulos = [
         "Imagen Original",
@@ -274,6 +338,7 @@ def procesarImagen(ruta):
         "Escala de Grises Final",
         "Detector de Bordes (Canny)",
         "Esquinas (Contornos + approxPolyDP)",
+        "Documento Enderezado (Perspective Transform)",
     ]
     imagenes = [
         originalRGB,
@@ -282,12 +347,13 @@ def procesarImagen(ruta):
         grisFinal,
         bordes,
         imagenMarcadaRGB,
+        documentoFinalRGB,
     ]
-    mapasColor = [None, None, None, "gray", "gray", None]
+    mapasColor = [None, None, None, "gray", "gray", None, None]
 
-    plt.figure(figsize=(15, 8))
-    for i in range(6):
-        plt.subplot(2, 3, i + 1)
+    plt.figure(figsize=(15, 10))
+    for i in range(7):
+        plt.subplot(3, 3, i + 1)
         plt.imshow(imagenes[i], cmap=mapasColor[i])
         plt.title(titulos[i])
         plt.axis("off")
@@ -295,10 +361,10 @@ def procesarImagen(ruta):
     plt.tight_layout()
     plt.show(block=True)
 
-    return esquinas
+    return esquinas, documentoFinal
 
 
 # --- EJECUCIÓN ---
 if __name__ == "__main__":
-    rutaImagen = sys.argv[1] if len(sys.argv) > 1 else "imagenes/imagen16.jpg"
+    rutaImagen = sys.argv[1] if len(sys.argv) > 1 else "imagenes/IMG_20260704_150429.jpg"
     procesarImagen(rutaImagen)
