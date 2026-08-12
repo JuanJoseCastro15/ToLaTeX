@@ -95,3 +95,16 @@ build/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Imágenes
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.webp
+*.svg
+*.ico
+
