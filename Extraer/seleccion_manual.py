@@ -18,7 +18,7 @@ Uso:
 import cv2
 import numpy as np
 import sys
-from procesador_documento import procesarImagen
+from Extraer.procesador_documento import procesarImagen
 
 VENTANA = "Selecciona un area y confirma con el boton verde"
 
