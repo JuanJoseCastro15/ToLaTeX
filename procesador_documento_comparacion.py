@@ -389,5 +389,5 @@ def mostrarAntesDespues(ruta, dimensionLimite=1080):
 
 
 if __name__ == "__main__":
-    ruta = sys.argv[1] if len(sys.argv) > 1 else "imagenes/imagen7.jpg"
+    ruta = sys.argv[1] if len(sys.argv) > 1 else "imagenes/imagen8.jpg"
     mostrarAntesDespues(ruta)
