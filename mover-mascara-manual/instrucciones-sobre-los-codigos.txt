@@ -1,0 +1,3 @@
+para poder correr bien los codigos sin fallos, es necesario cambiar la ruta 
+de la imagen a la imagen de preferencia y despues correr el codigo 
+llamado frag 3 (es el ultimo avance del codigo).
