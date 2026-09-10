@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     class MainMenuView {
         +body: Some View
@@ -22,3 +23,4 @@ classDiagram
     MainMenuView --> MainMenuViewModel : Notifica eventos
     MainMenuViewModel --> CameraPermissionsService : Consulta permisos
     MainMenuViewModel --> AppCoordinator : Solicita navegación
+```
