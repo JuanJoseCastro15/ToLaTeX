@@ -194,23 +194,45 @@ def enderezarDocumento(original, esquinas, destino):
     return documentoFinal
 
 
-def procesarImagen(ruta, guardar=True):
+def procesarImagen(ruta, guardar=True, dimensionLimite=1080):
     """
     Pipeline completo: recibe la ruta de la foto original y regresa
     la imagen del documento ya enderezado/recortado (documentoFinal).
     Si no se detectan las 4 esquinas, regresa la imagen original tal cual.
+
+    Para la DETECCIÓN (morfología + GrabCut + Canny + contornos) se
+    trabaja sobre una copia reducida a un máximo de 'dimensionLimite'
+    píxeles en su lado más grande. Esto es más rápido (GrabCut es lento
+    en fotos grandes) y más estable, porque hay menos ruido a esa
+    resolución. Las esquinas detectadas se reescalan de vuelta antes
+    de hacer el warpPerspective, así que el resultado final SÍ se
+    genera en la resolución original de la foto, sin perder calidad.
     """
     original = cargarImagen(ruta)
+    altoOriginal, anchoOriginal = original.shape[:2]
+    dimensionMaxima = max(altoOriginal, anchoOriginal)
 
-    imagenLimpia = limpiarTexto(original, tamanoKernel=5, iteraciones=3)
+    if dimensionMaxima > dimensionLimite:
+        escala = dimensionLimite / dimensionMaxima
+        imagenTrabajo = cv2.resize(
+            original, None, fx=escala, fy=escala, interpolation=cv2.INTER_AREA
+        )
+    else:
+        escala = 1.0
+        imagenTrabajo = original.copy()
+
+    imagenLimpia = limpiarTexto(imagenTrabajo, tamanoKernel=5, iteraciones=3)
     imagenSinFondo, _ = quitarFondo(imagenLimpia, margen=20, iteraciones=5)
     grisFinal = cv2.cvtColor(imagenSinFondo, cv2.COLOR_BGR2GRAY)
     bordes = detectarBordes(grisFinal)
-    _, esquinas = detectarEsquinas(original, bordes)
+    _, esquinas = detectarEsquinas(imagenTrabajo, bordes)
 
     if len(esquinas) == 4:
-        destino = encontrarDestino(esquinas)
-        documentoFinal = enderezarDocumento(original, esquinas, destino)
+        # Reescalamos las esquinas (detectadas en la imagen reducida)
+        # de vuelta a coordenadas de la imagen ORIGINAL en full resolución.
+        esquinasOriginal = [[x / escala, y / escala] for x, y in esquinas]
+        destino = encontrarDestino(esquinasOriginal)
+        documentoFinal = enderezarDocumento(original, esquinasOriginal, destino)
         print("Documento detectado y enderezado correctamente.")
     else:
         print("No se detectaron las 4 esquinas; se usa la imagen original.")
