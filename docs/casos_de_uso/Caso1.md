@@ -11,8 +11,3 @@ Cargar la aplicación.
 Desplegar el menú inicial de la aplicación.
 En el menú inicial,  mostrar un botón con una imagen y un texto que diga “Tomar foto”.
 El usuario presiona el botón.
-
-Alternativas:  
-Si no carga la aplicación, entonces despliega un botón para volver a cargar.
-Si no se despliega el menú inicial, entonces mostrará otro botón para volver a cargar.
-
