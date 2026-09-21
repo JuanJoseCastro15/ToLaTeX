@@ -6,36 +6,36 @@
 classDiagram
     class CameraView {
         +CameraViewModel viewModel
-        +body: View
+        +View body
     }
 
     class CameraViewModel {
         +CameraViewState state
-        +checkAndRequestPermission() async
-        +retryPermission() async
+        +checkAndRequestPermission()
+        +retryPermission()
     }
 
     class CameraServiceProtocol {
         <<interface>>
-        +checkPermission() async -> CameraAuthorizationStatus
-        +requestPermission() async -> Bool
-        +configureSession() async throws
+        +checkPermission() CameraAuthorizationStatus
+        +requestPermission() Bool
+        +configureSession()
     }
 
     class AVCameraService {
         -AVCaptureSession captureSession
         -AVCaptureDeviceInput deviceInput
-        +checkPermission() async -> CameraAuthorizationStatus
-        +requestPermission() async -> Bool
-        +configureSession() async throws
+        +checkPermission() CameraAuthorizationStatus
+        +requestPermission() Bool
+        +configureSession()
     }
 
     class CameraViewState {
         <<enumeration>>
         idle
         loadingPermission
-        denied(reason: String)
-        error(CameraError)
+        denied
+        error
         ready
     }
 
@@ -47,7 +47,7 @@ classDiagram
         authorized
     }
 
-    CameraView --> CameraViewModel : Binds / Observes
+    CameraView --> CameraViewModel : Binds
     CameraViewModel --> CameraServiceProtocol : Injected Service
     AVCameraService ..|> CameraServiceProtocol : Implements
     CameraViewModel --> CameraViewState : Manages
