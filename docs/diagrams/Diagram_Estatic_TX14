@@ -1,4 +1,4 @@
-# Historia de Usuario: Acceder a la cámara (TX-101)
+# TX14: Acceder a la cámara
 
 ## 1. Diagrama Estático (MVVM + Servicios)
 
@@ -6,7 +6,7 @@
 classDiagram
     class CameraView {
         +CameraViewModel viewModel
-        +body View
+        +body: View
     }
 
     class CameraViewModel {
@@ -47,8 +47,9 @@ classDiagram
         authorized
     }
 
-    CameraView --> CameraViewModel : Observe / Binds
+    CameraView --> CameraViewModel : Binds / Observes
     CameraViewModel --> CameraServiceProtocol : Injected Service
     AVCameraService ..|> CameraServiceProtocol : Implements
     CameraViewModel --> CameraViewState : Manages
     CameraServiceProtocol --> CameraAuthorizationStatus : Returns
+```
