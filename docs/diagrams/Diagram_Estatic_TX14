@@ -1,0 +1,54 @@
+# Historia de Usuario: Acceder a la cámara (TX-101)
+
+## 1. Diagrama Estático (MVVM + Servicios)
+
+```mermaid
+classDiagram
+    class CameraView {
+        +CameraViewModel viewModel
+        +body View
+    }
+
+    class CameraViewModel {
+        +CameraViewState state
+        +checkAndRequestPermission() async
+        +retryPermission() async
+    }
+
+    class CameraServiceProtocol {
+        <<interface>>
+        +checkPermission() async -> CameraAuthorizationStatus
+        +requestPermission() async -> Bool
+        +configureSession() async throws
+    }
+
+    class AVCameraService {
+        -AVCaptureSession captureSession
+        -AVCaptureDeviceInput deviceInput
+        +checkPermission() async -> CameraAuthorizationStatus
+        +requestPermission() async -> Bool
+        +configureSession() async throws
+    }
+
+    class CameraViewState {
+        <<enumeration>>
+        idle
+        loadingPermission
+        denied(reason: String)
+        error(CameraError)
+        ready
+    }
+
+    class CameraAuthorizationStatus {
+        <<enumeration>>
+        notDetermined
+        restricted
+        denied
+        authorized
+    }
+
+    CameraView --> CameraViewModel : Observe / Binds
+    CameraViewModel --> CameraServiceProtocol : Injected Service
+    AVCameraService ..|> CameraServiceProtocol : Implements
+    CameraViewModel --> CameraViewState : Manages
+    CameraServiceProtocol --> CameraAuthorizationStatus : Returns
