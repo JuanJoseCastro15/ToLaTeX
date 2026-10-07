@@ -33,7 +33,7 @@ final class CropViewModel {
                                                                       y: -extent.origin.y))
         }
         self.inputImage = normalized
-        self.previewImage = UIImage(ciImage: normalized)
+        self.previewImage = Self.makePreview(from: normalized)
         self.detectionService = detectionService
         self.processingService = processingService
     }
@@ -69,6 +69,19 @@ final class CropViewModel {
     func startManualSelection() {
         errorMessage = nil
         detectedPolygon = .defaultInset
+    }
+
+    /// SwiftUI no siempre dibuja un UIImage respaldado por CIImage, así que lo
+    /// renderizamos a CGImage (reducido a `maxDimension` para que sea ligero).
+    private static func makePreview(from image: CIImage, maxDimension: CGFloat = 2048) -> UIImage {
+        let extent = image.extent
+        guard !extent.isEmpty, !extent.isInfinite else { return UIImage() }
+        let scale = min(1, maxDimension / max(extent.width, extent.height))
+        let scaled = image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        guard let cgImage = CIContext().createCGImage(scaled, from: scaled.extent) else {
+            return UIImage()
+        }
+        return UIImage(cgImage: cgImage)
     }
 
     func dismissError() {
