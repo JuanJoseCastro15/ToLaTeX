@@ -2,13 +2,14 @@ import SwiftUI
 import PhotosUI
 import CoreImage
 
-/// Vista raíz: elegir foto → delimitar la hoja (CropView) → ver el resultado.
+/// Vista raíz: elegir foto → delimitar la hoja → marcar ecuaciones → ver recortes.
 struct RootView: View {
 
     private enum Step {
         case selecting
         case cropping(CIImage)
-        case result(UIImage)
+        case marking(CGImage)
+        case result([UIImage])
     }
 
     @State private var step: Step = .selecting
@@ -24,8 +25,8 @@ struct RootView: View {
             CropView(
                 image: image,
                 onConfirmed: { cropped in
-                    if let uiImage = makeUIImage(from: cropped) {
-                        step = .result(uiImage)
+                    if let cgImage = CIContext().createCGImage(cropped, from: cropped.extent) {
+                        step = .marking(cgImage)
                     } else {
                         loadError = "No se pudo generar la imagen recortada."
                         step = .selecting
@@ -34,8 +35,13 @@ struct RootView: View {
                 onRetake: { step = .selecting }
             )
 
-        case .result(let uiImage):
-            resultView(uiImage)
+        case .marking(let cgImage):
+            EquationSelectionView(image: cgImage) { crops in
+                step = .result(crops.map { UIImage(cgImage: $0) })
+            }
+
+        case .result(let crops):
+            resultView(crops)
         }
     }
 
@@ -70,15 +76,26 @@ struct RootView: View {
         }
     }
 
-    private func resultView(_ uiImage: UIImage) -> some View {
+    private func resultView(_ crops: [UIImage]) -> some View {
         VStack(spacing: 16) {
-            Text("Imagen lista para UniMERNet")
+            Text("Recortes listos para UniMERNet (\(crops.count))")
                 .font(.headline)
 
-            Image(uiImage: uiImage)
-                .resizable()
-                .scaledToFit()
-                .border(.secondary.opacity(0.4))
+            ScrollView {
+                VStack(spacing: 16) {
+                    ForEach(Array(crops.enumerated()), id: \.offset) { index, crop in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Ecuación \(index + 1)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Image(uiImage: crop)
+                                .resizable()
+                                .scaledToFit()
+                                .border(.secondary.opacity(0.4))
+                        }
+                    }
+                }
+            }
 
             Button("Empezar de nuevo") { step = .selecting }
                 .buttonStyle(.bordered)
@@ -103,10 +120,5 @@ struct RootView: View {
         } catch {
             loadError = error.localizedDescription
         }
-    }
-
-    private func makeUIImage(from image: CIImage) -> UIImage? {
-        guard let cgImage = CIContext().createCGImage(image, from: image.extent) else { return nil }
-        return UIImage(cgImage: cgImage)
     }
 }
