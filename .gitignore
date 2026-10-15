@@ -69,7 +69,9 @@ env/
 Packages/
 .swiftpm/xcode/xcuserdata/
 .swiftpm/xcode/workspace.xcworkspace/
-
+# Xcode user state
+xcuserdata/
+*.xcuserstate
 # Datos de usuario de Xcode (evita conflictos de ventanas y estados)
 *.xcodeproj/xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/
