@@ -1,0 +1,548 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 110;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		2D4E9BA6306EB13000E244EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D4E9B90306EB12E00E244EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D4E9B97306EB12E00E244EB;
+			remoteInfo = ToLaTex;
+		};
+		2D4E9BB0306EB13000E244EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2D4E9B90306EB12E00E244EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D4E9B97306EB12E00E244EB;
+			remoteInfo = ToLaTex;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2D4E9B98306EB12E00E244EB /* ToLaTex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToLaTex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D4E9BA5306EB13000E244EB /* ToLaTexTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToLaTexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D4E9BAF306EB13000E244EB /* ToLaTexUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToLaTexUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2D4E9B9A306EB12E00E244EB /* ToLaTex */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ToLaTex;
+			sourceTree = "<group>";
+		};
+		2D4E9BA8306EB13000E244EB /* ToLaTexTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ToLaTexTests;
+			sourceTree = "<group>";
+		};
+		2D4E9BB2306EB13000E244EB /* ToLaTexUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ToLaTexUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2D4E9B95306EB12E00E244EB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		2D4E9BA2306EB13000E244EB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		2D4E9BAC306EB13000E244EB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2D4E9B8F306EB12E00E244EB = {
+			isa = PBXGroup;
+			children = (
+				2D4E9B9A306EB12E00E244EB /* ToLaTex */,
+				2D4E9BA8306EB13000E244EB /* ToLaTexTests */,
+				2D4E9BB2306EB13000E244EB /* ToLaTexUITests */,
+				2D4E9B99306EB12E00E244EB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2D4E9B99306EB12E00E244EB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2D4E9B98306EB12E00E244EB /* ToLaTex.app */,
+				2D4E9BA5306EB13000E244EB /* ToLaTexTests.xctest */,
+				2D4E9BAF306EB13000E244EB /* ToLaTexUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2D4E9B97306EB12E00E244EB /* ToLaTex */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D4E9BB7306EB13000E244EB /* Build configuration list for PBXNativeTarget "ToLaTex" */;
+			buildPhases = (
+				2D4E9B94306EB12E00E244EB /* Sources */,
+				2D4E9B95306EB12E00E244EB /* Frameworks */,
+				2D4E9B96306EB12E00E244EB /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				2D4E9B9A306EB12E00E244EB /* ToLaTex */,
+			);
+			name = ToLaTex;
+			productName = ToLaTex;
+			productReference = 2D4E9B98306EB12E00E244EB /* ToLaTex.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2D4E9BA4306EB13000E244EB /* ToLaTexTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D4E9BBA306EB13000E244EB /* Build configuration list for PBXNativeTarget "ToLaTexTests" */;
+			buildPhases = (
+				2D4E9BA1306EB13000E244EB /* Sources */,
+				2D4E9BA2306EB13000E244EB /* Frameworks */,
+				2D4E9BA3306EB13000E244EB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2D4E9BA7306EB13000E244EB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2D4E9BA8306EB13000E244EB /* ToLaTexTests */,
+			);
+			name = ToLaTexTests;
+			productName = ToLaTexTests;
+			productReference = 2D4E9BA5306EB13000E244EB /* ToLaTexTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		2D4E9BAE306EB13000E244EB /* ToLaTexUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D4E9BBD306EB13000E244EB /* Build configuration list for PBXNativeTarget "ToLaTexUITests" */;
+			buildPhases = (
+				2D4E9BAB306EB13000E244EB /* Sources */,
+				2D4E9BAC306EB13000E244EB /* Frameworks */,
+				2D4E9BAD306EB13000E244EB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2D4E9BB1306EB13000E244EB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2D4E9BB2306EB13000E244EB /* ToLaTexUITests */,
+			);
+			name = ToLaTexUITests;
+			productName = ToLaTexUITests;
+			productReference = 2D4E9BAF306EB13000E244EB /* ToLaTexUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D4E9B90306EB12E00E244EB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					2D4E9B97306EB12E00E244EB = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					2D4E9BA4306EB13000E244EB = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 2D4E9B97306EB12E00E244EB;
+					};
+					2D4E9BAE306EB13000E244EB = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 2D4E9B97306EB12E00E244EB;
+					};
+				};
+			};
+			buildConfigurationList = 2D4E9B93306EB12E00E244EB /* Build configuration list for PBXProject "ToLaTex" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2D4E9B8F306EB12E00E244EB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2D4E9B99306EB12E00E244EB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2D4E9B97306EB12E00E244EB /* ToLaTex */,
+				2D4E9BA4306EB13000E244EB /* ToLaTexTests */,
+				2D4E9BAE306EB13000E244EB /* ToLaTexUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2D4E9B96306EB12E00E244EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		2D4E9BA3306EB13000E244EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		2D4E9BAD306EB13000E244EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D4E9B94306EB12E00E244EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		2D4E9BA1306EB13000E244EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		2D4E9BAB306EB13000E244EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2D4E9BA7306EB13000E244EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D4E9B97306EB12E00E244EB /* ToLaTex */;
+			targetProxy = 2D4E9BA6306EB13000E244EB /* PBXContainerItemProxy */;
+		};
+		2D4E9BB1306EB13000E244EB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D4E9B97306EB12E00E244EB /* ToLaTex */;
+			targetProxy = 2D4E9BB0306EB13000E244EB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2D4E9BB5306EB13000E244EB /* Debug configuration for PBXProject "ToLaTex" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2D4E9BB6306EB13000E244EB /* Release configuration for PBXProject "ToLaTex" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2D4E9BB8306EB13000E244EB /* Debug configuration for PBXNativeTarget "ToLaTex" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "\"ToLaTex necesita acceso a la cámara para poder capturar las ecuaciones matemáticas.\"";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tutorials.ToLaTex;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2D4E9BB9306EB13000E244EB /* Release configuration for PBXNativeTarget "ToLaTex" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "\"ToLaTex necesita acceso a la cámara para poder capturar las ecuaciones matemáticas.\"";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tutorials.ToLaTex;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2D4E9BBB306EB13000E244EB /* Debug configuration for PBXNativeTarget "ToLaTexTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tutorials.ToLaTexTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ToLaTex.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ToLaTex";
+			};
+			name = Debug;
+		};
+		2D4E9BBC306EB13000E244EB /* Release configuration for PBXNativeTarget "ToLaTexTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tutorials.ToLaTexTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ToLaTex.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ToLaTex";
+			};
+			name = Release;
+		};
+		2D4E9BBE306EB13000E244EB /* Debug configuration for PBXNativeTarget "ToLaTexUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tutorials.ToLaTexUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ToLaTex;
+			};
+			name = Debug;
+		};
+		2D4E9BBF306EB13000E244EB /* Release configuration for PBXNativeTarget "ToLaTexUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = tutorials.ToLaTexUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ToLaTex;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D4E9B93306EB12E00E244EB /* Build configuration list for PBXProject "ToLaTex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D4E9BB5306EB13000E244EB /* Debug configuration for PBXProject "ToLaTex" */,
+				2D4E9BB6306EB13000E244EB /* Release configuration for PBXProject "ToLaTex" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		2D4E9BB7306EB13000E244EB /* Build configuration list for PBXNativeTarget "ToLaTex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D4E9BB8306EB13000E244EB /* Debug configuration for PBXNativeTarget "ToLaTex" */,
+				2D4E9BB9306EB13000E244EB /* Release configuration for PBXNativeTarget "ToLaTex" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		2D4E9BBA306EB13000E244EB /* Build configuration list for PBXNativeTarget "ToLaTexTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D4E9BBB306EB13000E244EB /* Debug configuration for PBXNativeTarget "ToLaTexTests" */,
+				2D4E9BBC306EB13000E244EB /* Release configuration for PBXNativeTarget "ToLaTexTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		2D4E9BBD306EB13000E244EB /* Build configuration list for PBXNativeTarget "ToLaTexUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D4E9BBE306EB13000E244EB /* Debug configuration for PBXNativeTarget "ToLaTexUITests" */,
+				2D4E9BBF306EB13000E244EB /* Release configuration for PBXNativeTarget "ToLaTexUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D4E9B90306EB12E00E244EB /* Project object */;
+	validationLevel = 1;
+}
