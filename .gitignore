@@ -83,6 +83,11 @@ build/
 *.dSYM.zip
 *.dSYM/
 
+# Ignorar archivos de estado de usuario específicos
+*.xcuserstate
+xcuserdata/
+*.xcuserdatad/
+
 # ==========================================
 # 5. SISTEMA OPERATIVO (General)
 # ==========================================
@@ -107,4 +112,3 @@ Desktop.ini
 *.webp
 *.svg
 *.ico
-
