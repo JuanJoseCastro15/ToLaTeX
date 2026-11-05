@@ -15,6 +15,7 @@ struct RootView: View {
 
     @State private var step: Step = .welcome
     @State private var cameraViewModel = CameraViewModel()
+    private let preprocessing = ImagePreprocessingService()
     @State private var pickerItem: PhotosPickerItem?
     @State private var loadError: String?
 
@@ -152,15 +153,16 @@ struct RootView: View {
     private func loadPhoto(from item: PhotosPickerItem) async {
         defer { pickerItem = nil }
         do {
+            // Se decodifica con ImageIO (aplica la orientación EXIF) igual que la foto
+            // de la cámara. CIImage(image: UIImage) ignora la orientación del UIImage
+            // y dejaba las fotos de la galería giradas.
             guard let data = try await item.loadTransferable(type: Data.self),
-                  let uiImage = UIImage(data: data),
-                  let ciImage = CIImage(image: uiImage,
-                                        options: [.applyOrientationProperty: true]) else {
+                  let cgImage = await preprocessing.makeWorkingImage(from: data) else {
                 loadError = "La foto está corrupta o no se pudo leer. Elige otra."
                 return
             }
             loadError = nil
-            step = .cropping(ciImage)
+            step = .cropping(CIImage(cgImage: cgImage))
         } catch {
             loadError = error.localizedDescription
         }
