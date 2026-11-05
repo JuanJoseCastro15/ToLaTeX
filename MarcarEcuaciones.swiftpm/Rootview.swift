@@ -2,24 +2,30 @@ import SwiftUI
 import PhotosUI
 import CoreImage
 
-/// Vista raíz: elegir foto → delimitar la hoja → marcar ecuaciones → ver recortes.
+/// Flujo completo: bienvenida → cámara → delimitar la hoja → marcar ecuaciones → recortes.
 struct RootView: View {
 
     private enum Step {
-        case selecting
+        case welcome
+        case camera
         case cropping(CIImage)
         case marking(CGImage)
         case result([UIImage])
     }
 
-    @State private var step: Step = .selecting
+    @State private var step: Step = .welcome
+    @State private var cameraViewModel = CameraViewModel()
+    private let preprocessing = ImagePreprocessingService()
     @State private var pickerItem: PhotosPickerItem?
     @State private var loadError: String?
 
     var body: some View {
         switch step {
-        case .selecting:
-            selectionView
+        case .welcome:
+            welcomeView
+
+        case .camera:
+            cameraStep
 
         case .cropping(let image):
             CropView(
@@ -29,10 +35,10 @@ struct RootView: View {
                         step = .marking(cgImage)
                     } else {
                         loadError = "No se pudo generar la imagen recortada."
-                        step = .selecting
+                        step = .camera
                     }
                 },
-                onRetake: { step = .selecting }
+                onRetake: { step = .camera }
             )
 
         case .marking(let cgImage):
@@ -47,33 +53,72 @@ struct RootView: View {
 
     // MARK: - Pantallas
 
-    private var selectionView: some View {
-        VStack(spacing: 20) {
+    private var welcomeView: some View {
+        VStack(spacing: 24) {
+            Spacer()
+
             Image(systemName: "function")
-                .font(.system(size: 56))
+                .font(.system(size: 72))
                 .foregroundStyle(.tint)
 
-            Text("ToLaTeX")
-                .font(.largeTitle.bold())
+            VStack(spacing: 8) {
+                Text("Bienvenido a ToLaTeX")
+                    .font(.largeTitle.bold())
+                    .multilineTextAlignment(.center)
+                Text("Toma una foto de tu hoja y convierte tus ecuaciones a LaTeX.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
 
-            PhotosPicker(selection: $pickerItem, matching: .images) {
-                Label("Elegir foto de la hoja", systemImage: "photo")
-                    .frame(maxWidth: 280)
+            Spacer()
+
+            Button {
+                loadError = nil
+                step = .camera
+            } label: {
+                Label("Tomar foto", systemImage: "camera.fill")
+                    .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+        }
+        .padding(24)
+    }
 
+    private var cameraStep: some View {
+        CameraView(viewModel: cameraViewModel) { photo in
+            loadError = nil
+            step = .cropping(CIImage(cgImage: photo))
+        }
+        .overlay(alignment: .topTrailing) { galleryButton }
+        .overlay(alignment: .top) {
             if let loadError {
                 Text(loadError)
                     .font(.footnote)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(.white)
+                    .padding(8)
+                    .background(.red.opacity(0.85), in: .rect(cornerRadius: 8))
+                    .padding(.top, 8)
             }
         }
-        .padding()
         .onChange(of: pickerItem) { _, item in
             guard let item else { return }
             Task { await loadPhoto(from: item) }
         }
+    }
+
+    /// Alternativa a la cámara (y la única opción en el simulador).
+    private var galleryButton: some View {
+        PhotosPicker(selection: $pickerItem, matching: .images) {
+            Image(systemName: "photo.on.rectangle")
+                .font(.title3)
+                .foregroundStyle(.white)
+                .padding(12)
+                .background(.ultraThinMaterial, in: .circle)
+        }
+        .padding()
+        .accessibilityLabel("Elegir foto de la galería")
     }
 
     private func resultView(_ crops: [UIImage]) -> some View {
@@ -97,7 +142,7 @@ struct RootView: View {
                 }
             }
 
-            Button("Empezar de nuevo") { step = .selecting }
+            Button("Empezar de nuevo") { step = .welcome }
                 .buttonStyle(.bordered)
         }
         .padding()
@@ -108,15 +153,16 @@ struct RootView: View {
     private func loadPhoto(from item: PhotosPickerItem) async {
         defer { pickerItem = nil }
         do {
+            // Se decodifica con ImageIO (aplica la orientación EXIF) igual que la foto
+            // de la cámara. CIImage(image: UIImage) ignora la orientación del UIImage
+            // y dejaba las fotos de la galería giradas.
             guard let data = try await item.loadTransferable(type: Data.self),
-                  let uiImage = UIImage(data: data),
-                  let ciImage = CIImage(image: uiImage,
-                                        options: [.applyOrientationProperty: true]) else {
+                  let cgImage = await preprocessing.makeWorkingImage(from: data) else {
                 loadError = "La foto está corrupta o no se pudo leer. Elige otra."
                 return
             }
             loadError = nil
-            step = .cropping(ciImage)
+            step = .cropping(CIImage(cgImage: cgImage))
         } catch {
             loadError = error.localizedDescription
         }

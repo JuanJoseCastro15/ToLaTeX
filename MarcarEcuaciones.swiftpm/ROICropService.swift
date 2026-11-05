@@ -23,9 +23,9 @@ enum ROICropError: Error, LocalizedError {
 /// al tamaño de entrada del modelo.
 actor ROICropService: ROICropServiceProtocol {
 
-    /// Tamaño de entrada del modelo en píxeles. VERIFÍCALO contra la configuración
-    /// de tu versión de UniMERNet / tu conversión a Core ML.
-    static let defaultTargetSize = CGSize(width: 1152, height: 384)
+    /// Tamaño de entrada del modelo en píxeles (ancho × alto): el mismo 384×1152
+    /// que usaba el código de la cámara. Cámbialo aquí si tu modelo espera otro.
+    static let defaultTargetSize = CGSize(width: 384, height: 1152)
 
     private let targetSize: CGSize
 

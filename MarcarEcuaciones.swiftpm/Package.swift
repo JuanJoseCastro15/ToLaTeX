@@ -31,6 +31,9 @@ let package = Package(
                 .landscapeRight,
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
+            ],
+            capabilities: [
+                .camera(purposeString: "ToLaTeX solicita acceso a su camara para tomar foto a la hoja con ecuaciones")
             ]
         )
     ],
