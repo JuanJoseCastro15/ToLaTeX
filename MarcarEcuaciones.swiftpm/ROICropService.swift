@@ -3,6 +3,7 @@ import Foundation
 
 protocol ROICropServiceProtocol: Sendable {
     func cropAndNormalizeRegions(image: CGImage, rois: [EquationROI]) async throws -> [CGImage]
+    func stackedPreview(image: CGImage, rois: [EquationROI], gap: Int) async throws -> CGImage
 }
 
 enum ROICropError: Error, LocalizedError {
@@ -33,7 +34,51 @@ actor ROICropService: ROICropServiceProtocol {
         self.targetSize = targetSize
     }
 
+    /// Un recorte por ecuación, ajustado al tamaño de entrada del modelo.
     func cropAndNormalizeRegions(image: CGImage, rois: [EquationROI]) async throws -> [CGImage] {
+        try cropRegions(image: image, rois: rois).map { try padToTargetSize($0) }
+    }
+
+    /// Vista previa: los recortes sin relleno, uno debajo de otro y separados por
+    /// `gap` píxeles blancos (centrados en horizontal).
+    func stackedPreview(image: CGImage, rois: [EquationROI], gap: Int) async throws -> CGImage {
+        let crops = try cropRegions(image: image, rois: rois)
+        let gap = max(gap, 0)
+
+        let width = crops.map(\.width).max() ?? 1
+        let height = crops.reduce(0) { $0 + $1.height } + gap * (crops.count - 1)
+
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+        ) else { throw ROICropError.paddingFailed }
+
+        context.setFillColor(CGColor(gray: 1, alpha: 1))
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        context.interpolationQuality = .high
+
+        // CGContext tiene el origen abajo-izquierda; se dibuja de arriba hacia abajo.
+        var top = 0
+        for crop in crops {
+            let rect = CGRect(x: (width - crop.width) / 2,
+                              y: height - top - crop.height,
+                              width: crop.width,
+                              height: crop.height)
+            context.draw(crop, in: rect)
+            top += crop.height + gap
+        }
+
+        guard let output = context.makeImage() else { throw ROICropError.paddingFailed }
+        return output
+    }
+
+    /// Recorta cada ROI de la imagen base, sin relleno.
+    private func cropRegions(image: CGImage, rois: [EquationROI]) throws -> [CGImage] {
         guard !rois.isEmpty else { throw ROICropError.noRegions }
 
         let imageSize = CGSize(width: image.width, height: image.height)
@@ -47,7 +92,7 @@ actor ROICropService: ROICropServiceProtocol {
                   let cropped = image.cropping(to: pixelRect) else {
                 throw ROICropError.cropFailed
             }
-            results.append(try padToTargetSize(cropped))
+            results.append(cropped)
         }
         return results
     }

@@ -12,21 +12,50 @@ final class EquationSelectionViewModel {
     private(set) var isProcessing = false
     private(set) var errorMessage: String?
 
+    /// Modal de confirmación para borrar todos los rectángulos (TX21).
+    private(set) var showClearConfirmation = false
+    /// Banner rojo "Sin recortes" (TX21).
+    private(set) var showEmptyStateBanner = false
+
+    /// ROI resaltada en morado, la que muestra el botón "Eliminar recorte" (TX24).
+    private(set) var selectedROIID: UUID?
+    /// ROI que se va a eliminar mientras se espera la confirmación (TX24).
+    private(set) var roiPendingDeletion: EquationROI?
+    private(set) var showDeleteConfirmation = false
+
+    var selectedROI: EquationROI? {
+        guard let selectedROIID else { return nil }
+        return equationROIs.first { $0.id == selectedROIID }
+    }
+
     private let cropService: any ROICropServiceProtocol
-    private let onCropsReady: ([CGImage]) -> Void
+    private let onCropsReady: ([CGImage], CGImage) -> Void
 
     /// ROI existente que se está moviendo o redimensionando (nil si se dibuja una nueva).
     private var editingOriginal: EquationROI?
 
-    private static let minSide: CGFloat = 0.02
+    /// Acciones que "Deshacer" puede revertir, de la más antigua a la más reciente.
+    private enum UndoAction {
+        case added(id: UUID)
+        case deleted(roi: EquationROI, index: Int)
+        case clearedAll(rois: [EquationROI])
+    }
+    private var undoHistory: [UndoAction] = []
 
-    var canConfirm: Bool { !isProcessing && !equationROIs.isEmpty }
+    private static let minSide: CGFloat = 0.02
+    /// Separación en píxeles entre ecuaciones en la vista previa final.
+    private static let previewGap = 20
+
+    /// Hay algo que deshacer (agregar un recorte, eliminar uno o eliminar todos).
+    var canUndo: Bool { !undoHistory.isEmpty }
 
     /// - Parameter onCropsReady: punto de salida hacia el coordinador de navegación.
+    ///   Recibe los recortes listos para el modelo y la vista previa con los recortes
+    ///   apilados (separados por `previewGap` píxeles).
     init(
         baseFilteredImage: CGImage,
         cropService: any ROICropServiceProtocol = ROICropService(),
-        onCropsReady: @escaping ([CGImage]) -> Void
+        onCropsReady: @escaping ([CGImage], CGImage) -> Void
     ) {
         self.baseFilteredImage = baseFilteredImage
         self.cropService = cropService
@@ -51,6 +80,8 @@ final class EquationSelectionViewModel {
                 equationROIs[index] = updated
             }
         } else {
+            // El usuario retomó el trazado: se oculta el aviso de "sin recortes".
+            dismissEmptyStateBanner()
             activeROI = EquationROI(id: activeROI?.id ?? UUID(), normalizedBounds: bounds)
         }
     }
@@ -71,19 +102,114 @@ final class EquationSelectionViewModel {
                 equationROIs[index] = final
             }
         } else if isBigEnough {
-            equationROIs.append(EquationROI(id: activeROI?.id ?? UUID(), normalizedBounds: bounds))
+            let roi = EquationROI(id: activeROI?.id ?? UUID(), normalizedBounds: bounds)
+            equationROIs.append(roi)
+            undoHistory.append(.added(id: roi.id))
         }
     }
 
     func undoLastROI() {
         activeROI = nil
         editingOriginal = nil
-        guard !equationROIs.isEmpty else { return }
-        equationROIs.removeLast()
+        // Revierte la acción más reciente: quita el recorte agregado o devuelve el
+        // eliminado a su misma posición y con su último tamaño.
+        while let action = undoHistory.popLast() {
+            switch action {
+            case .added(let id):
+                guard let index = equationROIs.firstIndex(where: { $0.id == id }) else { continue }
+                equationROIs.remove(at: index)
+                if selectedROIID == id { selectedROIID = nil }
+                return
+            case .deleted(let roi, let index):
+                equationROIs.insert(roi, at: min(index, equationROIs.count))
+                dismissEmptyStateBanner()
+                return
+            case .clearedAll(let rois):
+                equationROIs = rois
+                dismissEmptyStateBanner()
+                return
+            }
+        }
     }
 
+    // MARK: - Eliminar todos los recortes (TX21)
+
+    /// Botón "Eliminar todos los rectángulos". Sin recortes avisa con el banner;
+    /// con recortes pide confirmación y no borra nada hasta que el usuario acepte.
+    func requestClearAll() {
+        guard !isProcessing else { return }
+        if equationROIs.isEmpty {
+            showEmptyStateBanner = true
+        } else {
+            showClearConfirmation = true
+        }
+    }
+
+    func confirmClearAll() {
+        activeROI = nil
+        editingOriginal = nil
+        // Se guarda la lista completa para que "Deshacer" pueda devolverla.
+        if !equationROIs.isEmpty {
+            undoHistory.append(.clearedAll(rois: equationROIs))
+        }
+        equationROIs.removeAll()
+        selectedROIID = nil
+        showClearConfirmation = false
+        showEmptyStateBanner = true
+    }
+
+    func cancelClearAll() {
+        showClearConfirmation = false
+    }
+
+    func dismissEmptyStateBanner() {
+        guard showEmptyStateBanner else { return }
+        showEmptyStateBanner = false
+    }
+
+    // MARK: - Eliminar recorte particular (TX24)
+
+    /// Tocar un recorte lo resalta; tocarlo de nuevo quita el resaltado;
+    /// tocar otro mueve el resaltado a ese.
+    func toggleSelection(id: UUID) {
+        guard equationROIs.contains(where: { $0.id == id }) else { return }
+        selectedROIID = (selectedROIID == id) ? nil : id
+    }
+
+    /// Botón "Eliminar recorte": guarda la ROI y pide confirmación; no borra nada todavía.
+    func requestDeleteROI(id: UUID) {
+        guard !isProcessing, let roi = equationROIs.first(where: { $0.id == id }) else { return }
+        roiPendingDeletion = roi
+        showDeleteConfirmation = true
+    }
+
+    func confirmDeleteROI() {
+        if let pending = roiPendingDeletion,
+           let index = equationROIs.firstIndex(where: { $0.id == pending.id }) {
+            // Se guarda con su posición para poder devolverla con "Deshacer".
+            undoHistory.append(.deleted(roi: equationROIs[index], index: index))
+            equationROIs.remove(at: index)
+            if selectedROIID == pending.id { selectedROIID = nil }
+        }
+        roiPendingDeletion = nil
+        showDeleteConfirmation = false
+    }
+
+    func cancelDeleteROI() {
+        roiPendingDeletion = nil
+        showDeleteConfirmation = false
+    }
+
+    // MARK: - Confirmar selección
+
     func confirmSelection() async {
-        guard canConfirm else { return }
+        guard !isProcessing else { return }
+        // Sin recortes no se avanza: se muestra el banner rojo.
+        guard !equationROIs.isEmpty else {
+            showEmptyStateBanner = true
+            return
+        }
+
         isProcessing = true
         errorMessage = nil
         defer { isProcessing = false }
@@ -93,7 +219,12 @@ final class EquationSelectionViewModel {
                 image: baseFilteredImage,
                 rois: equationROIs
             )
-            onCropsReady(crops)
+            let preview = try await cropService.stackedPreview(
+                image: baseFilteredImage,
+                rois: equationROIs,
+                gap: Self.previewGap
+            )
+            onCropsReady(crops, preview)
         } catch is CancellationError {
             // La vista desapareció; no hay nada que mostrar.
         } catch {

@@ -7,7 +7,7 @@ struct EquationSelectionView: View {
     /// Rectángulo de la ROI al inicio de un gesto de mover/redimensionar.
     @State private var editStartRect: CGRect?
 
-    init(image: CGImage, onCropsReady: @escaping ([CGImage]) -> Void) {
+    init(image: CGImage, onCropsReady: @escaping ([CGImage], CGImage) -> Void) {
         _viewModel = State(initialValue: EquationSelectionViewModel(
             baseFilteredImage: image,
             onCropsReady: onCropsReady
@@ -16,16 +16,26 @@ struct EquationSelectionView: View {
 
     var body: some View {
         VStack(spacing: 16) {
+            clearAllButton
+
             Text("Dibuja un rectángulo sobre cada ecuación. Arrástralo para moverlo y usa las esquinas para cambiar su tamaño.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
             imageCanvas
+                .overlay(alignment: .top) {
+                    if viewModel.showEmptyStateBanner { renderEmptyStateBanner() }
+                }
             controls
         }
         .padding()
+        .animation(.easeInOut(duration: 0.2), value: viewModel.showEmptyStateBanner)
         .overlay { if viewModel.isProcessing { loadingOverlay } }
+        .overlay { if viewModel.showClearConfirmation { renderConfirmationOverlay() } }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.showClearConfirmation)
+        .overlay { if viewModel.showDeleteConfirmation { renderDeleteConfirmationModal() } }
+        .animation(.easeInOut(duration: 0.2), value: viewModel.showDeleteConfirmation)
         .alert("No se pudo continuar", isPresented: errorBinding) {
             Button("Aceptar", role: .cancel) {}
         } message: {
@@ -84,49 +94,90 @@ struct EquationSelectionView: View {
         }
 
         ForEach(Array(viewModel.equationROIs.enumerated()), id: \.element.id) { index, roi in
-            let rect = pixelRect(roi.normalizedBounds, in: size)
-            let color: Color = viewModel.activeROI?.id == roi.id ? .orange : .blue
+            renderROIBoundingBox(roi: roi, index: index, in: size)
+        }
 
-            ZStack {
-                // Cuerpo: arrastrar para mover.
-                Rectangle()
-                    .fill(color.opacity(0.15))
-                    .overlay(Rectangle().strokeBorder(color, lineWidth: 2))
-                    .overlay(alignment: .topLeading) {
-                        Text("\(index + 1)")
-                            .font(.caption.bold())
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(color, in: .rect(cornerRadius: 4))
-                            .padding(3)
-                    }
-                    .contentShape(Rectangle())
-                    .frame(width: rect.width, height: rect.height)
-                    .position(x: rect.midX, y: rect.midY)
-                    .gesture(moveGesture(for: roi, in: size))
-                    .accessibilityLabel("Ecuación \(index + 1)")
+        // El botón de eliminar va encima de todas las ROIs para que ninguna lo tape.
+        if let selected = viewModel.selectedROI {
+            renderDeleteButton(for: selected, in: size)
+        }
+    }
 
-                // Esquinas: arrastrar para cambiar el tamaño.
-                ForEach(0..<4, id: \.self) { cornerIndex in
-                    let point = corner(cornerIndex, of: rect)
-                    Circle()
-                        .fill(.white)
-                        .overlay(Circle().stroke(color, lineWidth: 3))
-                        .frame(width: 16, height: 16)
-                        .frame(width: 44, height: 44) // zona táctil más grande
-                        .contentShape(Rectangle())
-                        .position(point)
-                        .gesture(resizeGesture(for: roi, cornerIndex: cornerIndex, in: size))
+    /// Una ROI: cuerpo (tocar = seleccionar, arrastrar = mover) y esquinas (redimensionar).
+    /// La seleccionada se resalta con borde morado.
+    @ViewBuilder
+    private func renderROIBoundingBox(roi: EquationROI, index: Int, in size: CGSize) -> some View {
+        let rect = pixelRect(roi.normalizedBounds, in: size)
+        let isSelected = viewModel.selectedROIID == roi.id
+        let color: Color = isSelected ? .purple : (viewModel.activeROI?.id == roi.id ? .orange : .blue)
+
+        ZStack {
+            // Cuerpo: tocar para seleccionar, arrastrar para mover.
+            Rectangle()
+                .fill(color.opacity(0.15))
+                .overlay(Rectangle().strokeBorder(color, lineWidth: isSelected ? 4 : 2))
+                .overlay(alignment: .topLeading) {
+                    Text("\(index + 1)")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(color, in: .rect(cornerRadius: 4))
+                        .padding(3)
                 }
+                .contentShape(Rectangle())
+                .frame(width: rect.width, height: rect.height)
+                .position(x: rect.midX, y: rect.midY)
+                .gesture(moveGesture(for: roi, in: size))
+                .onTapGesture { viewModel.toggleSelection(id: roi.id) }
+                .accessibilityLabel("Ecuación \(index + 1)")
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+
+            // Esquinas: arrastrar para cambiar el tamaño.
+            ForEach(0..<4, id: \.self) { cornerIndex in
+                let point = corner(cornerIndex, of: rect)
+                Circle()
+                    .fill(.white)
+                    .overlay(Circle().stroke(color, lineWidth: 3))
+                    .frame(width: 16, height: 16)
+                    .frame(width: 44, height: 44) // zona táctil más grande
+                    .contentShape(Rectangle())
+                    .position(point)
+                    .gesture(resizeGesture(for: roi, cornerIndex: cornerIndex, in: size))
             }
         }
+    }
+
+    /// Botón "Eliminar recorte" anclado a la esquina superior derecha de la ROI
+    /// seleccionada: queda justo encima del borde y, si arriba no hay espacio, dentro.
+    private func renderDeleteButton(for roi: EquationROI, in size: CGSize) -> some View {
+        let anchor = roi.topRightAnchor(in: CGRect(origin: .zero, size: size))
+        let buttonSize = CGSize(width: 150, height: 36)
+        let centerX = min(max(anchor.x - buttonSize.width / 2, buttonSize.width / 2),
+                          size.width - buttonSize.width / 2)
+        let centerY = anchor.y >= buttonSize.height + 4
+            ? anchor.y - buttonSize.height / 2 - 2
+            : anchor.y + buttonSize.height / 2 + 2
+
+        return Button {
+            viewModel.requestDeleteROI(id: roi.id)
+        } label: {
+            Label("Eliminar recorte", systemImage: "xmark")
+                .font(.caption.bold())
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .foregroundStyle(.white)
+                .frame(width: buttonSize.width, height: buttonSize.height)
+                .background(Color.red, in: .capsule)
+        }
+        .position(x: centerX, y: centerY)
     }
 
     // MARK: - Gestos de edición
 
     private func moveGesture(for roi: EquationROI, in size: CGSize) -> some Gesture {
-        DragGesture(minimumDistance: 2, coordinateSpace: .named(Self.canvasSpace))
+        // 6 pt: un toque con poco temblor cuenta como toque (seleccionar), no como arrastre.
+        DragGesture(minimumDistance: 6, coordinateSpace: .named(Self.canvasSpace))
             .onChanged { value in
                 if editStartRect == nil {
                     editStartRect = roi.normalizedBounds
@@ -167,6 +218,117 @@ struct EquationSelectionView: View {
         editStartRect = nil
     }
 
+    // MARK: - Eliminar todos los recortes
+
+    /// Botón superior, centrado con una ligera alineación a la izquierda.
+    private var clearAllButton: some View {
+        Button(role: .destructive) {
+            viewModel.requestClearAll()
+        } label: {
+            Label("Eliminar todos los rectángulos", systemImage: "trash")
+                .font(.subheadline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .buttonStyle(.bordered)
+        .tint(.red)
+        .disabled(viewModel.isProcessing)
+        .frame(maxWidth: .infinity)
+        .padding(.trailing, 40) // desplaza el centro un poco a la izquierda
+    }
+
+    /// Banner rojo cuando no hay recortes. No bloquea los toques, así el usuario
+    /// puede empezar a trazar de inmediato (lo que lo oculta).
+    private func renderEmptyStateBanner() -> some View {
+        VStack(spacing: 2) {
+            Text("Sin recortes")
+                .font(.headline)
+            Text("Marca al menos una ecuación para continuar.")
+                .font(.caption)
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
+        .background(Color.red, in: .rect(cornerRadius: 10))
+        .padding(8)
+        .allowsHitTesting(false)
+        .accessibilityElement(children: .combine)
+        .transition(.move(edge: .top).combined(with: .opacity))
+    }
+
+    /// Confirmación explícita: tocar fuera no la cierra, hay que elegir un botón.
+    private func renderConfirmationOverlay() -> some View {
+        renderConfirmationCard(
+            title: "¿Eliminar todos los rectángulos?",
+            message: "Se eliminarán todos los recortes marcados (\(viewModel.equationROIs.count)). Podrás recuperarlos con Deshacer.",
+            onCancel: { viewModel.cancelClearAll() },
+            onConfirm: { viewModel.confirmClearAll() }
+        )
+    }
+
+    /// Confirmación para eliminar únicamente el recorte seleccionado (TX24).
+    private func renderDeleteConfirmationModal() -> some View {
+        renderConfirmationCard(
+            title: "¿Deseas eliminar este recorte?",
+            message: "Se eliminará únicamente el recorte seleccionado. Podrás recuperarlo con Deshacer.",
+            onCancel: { viewModel.cancelDeleteROI() },
+            onConfirm: { viewModel.confirmDeleteROI() }
+        )
+    }
+
+    /// Tarjeta de confirmación compartida: verde confirma, rojo cancela.
+    private func renderConfirmationCard(
+        title: String,
+        message: String,
+        onCancel: @escaping () -> Void,
+        onConfirm: @escaping () -> Void
+    ) -> some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
+
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.title)
+                    .foregroundStyle(.orange)
+
+                Text(title)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+
+                HStack(spacing: 12) {
+                    Button {
+                        onCancel()
+                    } label: {
+                        Text("Cancelar").frame(maxWidth: .infinity)
+                    }
+                    .tint(.red)
+
+                    Button {
+                        onConfirm()
+                    } label: {
+                        Text("Confirmar").frame(maxWidth: .infinity)
+                    }
+                    .tint(.green)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+            }
+            .padding(20)
+            .background(.regularMaterial, in: .rect(cornerRadius: 16))
+            .padding(.horizontal, 32)
+        }
+        .transition(.opacity)
+    }
+
     // MARK: - Controles
 
     private var controls: some View {
@@ -181,7 +343,6 @@ struct EquationSelectionView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .disabled(!viewModel.canConfirm)
 
             Button {
                 viewModel.undoLastROI()
@@ -189,7 +350,7 @@ struct EquationSelectionView: View {
                 Label("Deshacer", systemImage: "arrow.uturn.backward")
             }
             .buttonStyle(.bordered)
-            .disabled(viewModel.equationROIs.isEmpty)
+            .disabled(!viewModel.canUndo)
         }
         .disabled(viewModel.isProcessing)
     }
