@@ -10,7 +10,7 @@ struct RootView: View {
         case camera
         case cropping(CIImage)
         case marking(CGImage)
-        case result([UIImage])
+        case result(preview: UIImage, crops: [CGImage])
     }
 
     @State private var step: Step = .welcome
@@ -42,12 +42,13 @@ struct RootView: View {
             )
 
         case .marking(let cgImage):
-            EquationSelectionView(image: cgImage) { crops in
-                step = .result(crops.map { UIImage(cgImage: $0) })
+            EquationSelectionView(image: cgImage) { crops, preview in
+                step = .result(preview: UIImage(cgImage: preview), crops: crops)
             }
 
-        case .result(let crops):
-            resultView(crops)
+        case .result(let preview, let crops):
+            // `crops` (uno por ecuación, al tamaño del modelo) es lo que pasará a UniMERNet.
+            resultView(preview: preview, count: crops.count)
         }
     }
 
@@ -121,25 +122,17 @@ struct RootView: View {
         .accessibilityLabel("Elegir foto de la galería")
     }
 
-    private func resultView(_ crops: [UIImage]) -> some View {
+    /// Una sola imagen con las ecuaciones apiladas, separadas por 20 px.
+    private func resultView(preview: UIImage, count: Int) -> some View {
         VStack(spacing: 16) {
-            Text("Recortes listos para UniMERNet (\(crops.count))")
+            Text("Recortes listos para UniMERNet (\(count))")
                 .font(.headline)
 
             ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(Array(crops.enumerated()), id: \.offset) { index, crop in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Ecuación \(index + 1)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Image(uiImage: crop)
-                                .resizable()
-                                .scaledToFit()
-                                .border(.secondary.opacity(0.4))
-                        }
-                    }
-                }
+                Image(uiImage: preview)
+                    .resizable()
+                    .scaledToFit()
+                    .border(.secondary.opacity(0.4))
             }
 
             Button("Empezar de nuevo") { step = .welcome }
